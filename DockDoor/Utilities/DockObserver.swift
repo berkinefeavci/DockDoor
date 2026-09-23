@@ -851,7 +851,7 @@ final class DockObserver {
                 return nil
             }
 
-            if type == .leftMouseDown, !previewCoordinator.mouseIsWithinPreviewWindow {
+            if Self.isPrimaryDockClick(type: type, flags: event.flags), !previewCoordinator.mouseIsWithinPreviewWindow {
                 let shouldIntercept = handleDockClick(app: app)
                 if shouldIntercept {
                     return nil
@@ -937,6 +937,10 @@ final class DockObserver {
     private func modifierFlagsExactlyMatch(_ flags: CGEventFlags, _ expectedModifier: CGEventFlags) -> Bool {
         let activeModifiers = flags.intersection([.maskShift, .maskControl, .maskAlternate, .maskCommand])
         return activeModifiers == expectedModifier
+    }
+
+    static func isPrimaryDockClick(type: CGEventType, flags: CGEventFlags) -> Bool {
+        type == .leftMouseDown && !flags.contains(.maskControl)
     }
 
     private func handleDockClick(app: NSRunningApplication) -> Bool {
